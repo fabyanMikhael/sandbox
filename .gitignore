@@ -1,0 +1,6 @@
+*.o
+*/*.o
+*.idx
+*/*.idx
+target
+target/*
