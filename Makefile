@@ -1,25 +1,28 @@
 CXX=g++
 NVCC=nvcc
+TARGET=target/main
+OBJ_DIR=target
+SRC_DIR=src
+CXX_SOURCES=$(wildcard $(SRC_DIR)/**/*.cpp $(SRC_DIR)/*.cpp)
+CU_SOURCES=$(wildcard $(SRC_DIR)/**/*.cu $(SRC_DIR)/*.cu)
+CXX_OBJECTS=$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CXX_SOURCES))
+CU_OBJECTS=$(patsubst $(SRC_DIR)/%.cu,$(OBJ_DIR)/%.o,$(CU_SOURCES))
 
-all: main
+all: $(TARGET)
 
-main: main.o renderer.o particles.o
-	${CXX} -L/usr/local/cuda/lib64 -o target/main target/main.o target/renderer.o target/gpu.o target/particles.o -lSDL2 -lcudart 
+$(TARGET): $(CXX_OBJECTS) $(CU_OBJECTS)
+	$(CXX) -L/usr/local/cuda/lib64 -o $@ $^ -lSDL2 -lcudart 
 
-main.o: src/main.cpp
-	${CXX} -c -o target/main.o src/main.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) -c -o $@ $<
 
-renderer.o: src/renderer/renderer.cpp src/renderer/renderer.h gpu.o
-	${CXX} -c -o target/renderer.o src/renderer/renderer.cpp
-
-gpu.o: src/renderer/gpu.cu src/renderer/gpu.h
-	nvcc -c -o target/gpu.o src/renderer/gpu.cu
-
-particles.o: src/particles/particles.cu src/particles/particles.h
-	nvcc -c -o target/particles.o src/particles/particles.cu
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cu
+	@mkdir -p $(@D)
+	$(NVCC) -c -o $@ $<
 
 clean: 
-	rm -f target/*.o main
+	@rm -rf $(OBJ_DIR) $(TARGET)
 
-run: main
-	./target/main
+run: $(TARGET)
+	@./$(TARGET)
