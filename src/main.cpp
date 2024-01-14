@@ -3,12 +3,11 @@
 #include "renderer/renderer.h"
 
 int main() {
-    ParticleSystem particleSystem(100, 100);
+    ParticleSystem particleSystem(32 * 5, 32 * 5);
     Renderer renderer(&particleSystem);
 
-    while (renderer.draw()) {
-        particleSystem.update();
-    };
+    while (renderer.draw())
+        ;
 
     return 0;
 }

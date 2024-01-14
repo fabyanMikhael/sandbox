@@ -16,4 +16,5 @@ class ParticleSystem {
     int width;
     int height;
     ParticleType *particles;
+    ParticleType *nextParticles;
 };

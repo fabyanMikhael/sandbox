@@ -70,6 +70,7 @@ bool Renderer::draw() {
     uint32_t now = SDL_GetTicks();
     if (next_time_step <= now) {
 
+        particleSystem->update();
         SDL_LockSurface(default_screen);
         particleSystem->render(gpu_mem);
         if (gpuBlit(gpu_mem, default_screen->pixels) != 0) {
